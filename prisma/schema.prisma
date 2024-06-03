@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model personal {
+  idpersonal     Int      @id @default(autoincrement())
+  //En este ejemplo el nombre es un varchar de 45 caracteres, pero por utilizar sql Lite no se puede especificar el tamaño
+  nombre         String //@db.VarChar(45) 
+  apepaterno     String //@db.VarChar(45) 
+  apematerno     String? //@db.VarChar(45) 
+  direccion      String? //@db.VarChar(255) 
+  fechadeingreso DateTime @default(now())
+  // Relación uno a uno con usuario
+  usuario        usuario?
+}
+
+model usuario {
+  idusuario     Int       @id @default(autoincrement())
+  apodo         String    @unique //@db.VarChar(45) 
+  correo        String    @unique //@db.VarChar(255) 
+  contrasenia   String //@db.VarChar(100) 
+  fecharegistro DateTime  @default(now())
+  isadmin       Boolean   @default(false)
+  // Relación uno a uno con personal
+  idpersonal    Int?      @unique
+  // Definición de la relación
+  personal      personal? @relation(fields: [idpersonal], references: [idpersonal])
+
+  // Relación uno a muchos con nota
+  notas      nota[]
+  comentario comentario[]
+  respuesta  respuesta[]
+}
+
+model nota {
+  idnota        Int          @id @default(autoincrement())
+  titulo        String //@db.VarChar(45) 
+  contenido     String //@db.VarChar(255) 
+  fecharegistro DateTime     @default(now())
+  // Definición de las relaciones
+  idusuario     Int
+  // Relación uno a uno
+  usuario       usuario?     @relation(fields: [idusuario], references: [idusuario])
+  // Relación uno a muchos
+  comentarios   comentario[]
+}
+
+model comentario {
+  idcomentario  Int         @id @default(autoincrement())
+  contenido     String //@db.VarChar(255) 
+  fecharegistro DateTime    @default(now())
+  // Definición de las relaciones
+  idusuario     Int
+  idnota        Int
+  // Relación uno a uno
+  usuario       usuario     @relation(fields: [idusuario], references: [idusuario])
+  nota          nota        @relation(fields: [idnota], references: [idnota])
+  // Relación uno a muchos
+  respuesta     respuesta[]
+}
+
+model respuesta {
+  idrespuesta   Int        @id @default(autoincrement())
+  contenido     String //@db.VarChar(255) 
+  fecharegistro DateTime   @default(now())
+  // Definición de las relaciones
+  idusuario     Int
+  idcomentario  Int
+  // Relación uno a uno
+  usuario       usuario    @relation(fields: [idusuario], references: [idusuario])
+  comentario    comentario @relation(fields: [idcomentario], references: [idcomentario])
+}

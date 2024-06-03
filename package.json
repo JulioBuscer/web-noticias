@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "iniciar_bd": "node prisma/iniciar_bd.ts"
+    "iniciar_bd": "node prisma/iniciar_bd.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.14.0",

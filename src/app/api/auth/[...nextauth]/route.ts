@@ -62,7 +62,7 @@ export const authOptions = {
 
     pages: {
         signIn: "/auth/login",
-        error: "/auth/login",
+        error: "/",
         signOut: "/auth/login",
     }
 };
